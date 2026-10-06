@@ -6,10 +6,10 @@ install:
 	@uv sync
 
 run:
-	@python3 $(NAME) $(CONFIG_FILE)
+	@uv run python3 $(NAME) $(CONFIG_FILE)
 
 debug:
-	python3 -m pdb $(NAME) $(CONFIG_FILE)
+	@uv run python3 -m pdb $(NAME) $(CONFIG_FILE)
 
 lint:
 	flake8 .

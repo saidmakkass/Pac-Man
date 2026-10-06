@@ -3,4 +3,9 @@ name = "pac-man"
 version = "0.1.0"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "mlx",
+]
+
+[tool.uv.sources]
+mlx = { path = "mlx-2.2-py3-none-any.whl" }
