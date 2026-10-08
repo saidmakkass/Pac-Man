@@ -57,9 +57,8 @@ class Interface:
         dt = now - self.last_time
         self.last_time = now
 
-        self.current_view.loop_hook(dt)
-
-        print(f"dt={dt:.6f}, fps={1/dt:.1f}")
+        self.current_view.update(dt)
+        self.current_view.draw()
 
     def key_hook(self, keycode: int, _):
         match self.current_view:
@@ -67,7 +66,7 @@ class Interface:
                 self.main_menu_view.key_hook(keycode)
 
     def run(self):
-        self.current_view.show()
+        self.current_view.draw()
         mlx.mlx_loop(mlx_ptr)
 
     def exit(self, _=None):

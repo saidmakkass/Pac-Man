@@ -19,13 +19,9 @@ class View(ABC):
         self.images: list[Image] = []
         self.animations: list[AnimatedImage] = []
 
-    def show(self):
+    def draw(self):
         for image in self.images + self.animations:
             image.draw(self.win_ptr)
-
-    def loop_hook(self, dt: float):
-        self.update(dt)
-        self.show()
 
     def destroy(self):
         for image in self.images + self.animations:
@@ -52,8 +48,30 @@ class MainMenuView(View):
             ],
         )
 
+        self.animations.extend(
+            [
+                AnimatedImage(
+                    50,
+                    20 + i * 20,
+                    anim_dir / "pac-man_left",
+                    frame_rate=1 / 15,
+                )
+                for i in range(10)
+            ]
+            + [
+                AnimatedImage(
+                    80,
+                    20 + i * 20,
+                    anim_dir / "pac-man_right",
+                    frame_rate=1 / 2,
+                )
+                for i in range(10)
+            ]
+        )
+
     def update(self, dt: float) -> None:
-        pass
+        for image in self.animations:
+            image.update(dt)
 
     def key_hook(self, keycode: int) -> None:
         pass
