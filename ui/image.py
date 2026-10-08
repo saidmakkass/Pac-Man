@@ -35,7 +35,7 @@ class Image:
     def put_pixel(self, x: int, y: int, color: int) -> None:
         self.img_buf[y, x] = color
 
-    def put_to_window(self, win_ptr: Any) -> None:
+    def draw(self, win_ptr: Any) -> None:
         mlx.mlx_put_image_to_window(
             mlx_ptr,
             win_ptr,
@@ -65,8 +65,8 @@ class AnimatedImage:
             self.frames.append(Image(self.x, self.y, path))
         self.n_frames = len(self.frames)
 
-    def put_to_window(self, win_ptr: Any) -> None:
-        self.frames[self.current_frame].put_to_window(win_ptr)
+    def draw(self, win_ptr: Any) -> None:
+        self.frames[self.current_frame].draw(win_ptr)
         self.current_frame += 1
         self.current_frame %= self.n_frames
 

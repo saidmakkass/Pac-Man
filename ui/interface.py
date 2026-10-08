@@ -1,3 +1,5 @@
+import time
+
 from .mlx import mlx, mlx_ptr
 from .views import MainMenuView, GameView, PauseView, GameOverView, View
 
@@ -41,6 +43,8 @@ class Interface:
 
         self.current_view = self.main_menu_view
 
+        self.last_time = time.perf_counter()
+
         self.setup_hooks()
 
     def setup_hooks(self):
@@ -49,8 +53,13 @@ class Interface:
         mlx.mlx_loop_hook(mlx_ptr, self.loop_hook, None)
 
     def loop_hook(self, _):
-        mlx.mlx_clear_window(mlx_ptr, self.win_ptr)
-        self.current_view.loop_hook()
+        now = time.perf_counter()
+        dt = now - self.last_time
+        self.last_time = now
+
+        self.current_view.loop_hook(dt)
+
+        print(f"dt={dt:.6f}, fps={1/dt:.1f}")
 
     def key_hook(self, keycode: int, _):
         match self.current_view:
