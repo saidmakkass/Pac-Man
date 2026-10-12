@@ -1,7 +1,11 @@
 import time
 
-from .mlx import mlx, mlx_ptr
-from .views import MainMenuView, GameView, PauseView, GameOverView, View
+from .globals import mlx, mlx_ptr
+from .views.view import View
+from .views.main_view import MainMenuView
+from .views.game_view import GameView
+from .views.pause_view import PauseView
+from .views.over_view import GameOverView
 
 
 class Interface:
@@ -51,19 +55,22 @@ class Interface:
         mlx.mlx_hook(self.win_ptr, 33, 0, self.exit, None)
         mlx.mlx_key_hook(self.win_ptr, self.key_hook, None)
         mlx.mlx_loop_hook(mlx_ptr, self.loop_hook, None)
+        mlx.mlx_mouse_hook(self.win_ptr, self.mouse_hook, None)
 
     def loop_hook(self, _):
         now = time.perf_counter()
         dt = now - self.last_time
         self.last_time = now
 
-        self.current_view.update(dt)
+        _, mx, my = mlx.mlx_mouse_get_pos(self.win_ptr)
+        self.current_view.update(dt, mx, my)
         self.current_view.draw()
 
+    def mouse_hook(self, button: int,  x: int, y: int, _) -> None:
+        self.current_view.mouse_hook(button, x, y)
+
     def key_hook(self, keycode: int, _):
-        match self.current_view:
-            case self.main_menu_view:
-                self.main_menu_view.key_hook(keycode)
+        self.current_view.key_hook(keycode)
 
     def run(self):
         self.current_view.draw()
