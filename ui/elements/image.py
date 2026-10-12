@@ -1,11 +1,12 @@
 from typing import Any, Optional, Protocol
 from pathlib import Path
 
+from ui.globals import mlx, mlx_ptr
 
-from .mlx import mlx, mlx_ptr
+from .element import Element
 
 
-class Image:
+class Image(Element):
     def __init__(
         self,
         x: int,
@@ -35,6 +36,9 @@ class Image:
     def put_pixel(self, x: int, y: int, color: int) -> None:
         self.img_buf[y, x] = color
 
+    def update(self, dt: float, mx: int, my: int) -> None:
+        pass
+
     def draw(self, win_ptr: Any) -> None:
         mlx.mlx_put_image_to_window(
             mlx_ptr,
@@ -44,40 +48,11 @@ class Image:
             self.y,
         )
 
+    def destroy(self):
+        mlx.mlx_destroy_image(mlx_ptr, self.img_ptr)
+
     def clear(self, color: int):
         print(self.width, self.height, self.path, len(self.img_buf))  # debug
         for x in range(self.width):
             for y in range(self.height):
                 self.put_pixel(x, y, color)
-
-    def destroy(self):
-        mlx.mlx_destroy_image(mlx_ptr, self.img_ptr)
-
-
-class AnimatedImage:
-    def __init__(self, x: int, y: int, dir_path: str, *, frame_rate: float):
-        self.x, self.y = x, y
-
-        image_paths = sorted(list(Path(dir_path).glob("*.png")))
-
-        self.frames: list[Image] = []
-        for path in image_paths:
-            self.frames.append(Image(self.x, self.y, path))
-        self.n_frames = len(self.frames)
-        self.frame_interval = frame_rate
-        self.current_frame = 0
-        self.frame_timer = 0
-
-    def draw(self, win_ptr: Any) -> None:
-        self.frames[self.current_frame].draw(win_ptr)
-
-    def update(self, dt: float) -> None:
-        self.frame_timer += dt
-
-        if self.frame_timer >= self.frame_interval:
-            self.frame_timer -= self.frame_interval
-            self.current_frame = (self.current_frame + 1) % self.n_frames
-
-    def destroy(self) -> None:
-        for image in self.frames:
-            image.destroy()
