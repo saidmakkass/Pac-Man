@@ -1,17 +1,17 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 @dataclass
 class Pac_Man:
-    x: int
-    y: int
-    score: int
-    lives: int
-    current_step: str
-    is_dead: bool
-    spawn_position: tuple[int]
+    x: int = 0
+    y: int = 0
+    score: int = 0
+    lives: int = 3
+    current_step: str = ""
+    is_dead: bool = False
+    spawn_position: tuple[int] = (0, 0)
 
     def respawn(self):
-        self.y, self.x = self.spawn_position
+        self.spawn_position = (self.y, self.x)
 
     def put_new_coordinates(self, y, x):
         self.y = y
@@ -21,18 +21,18 @@ class Pac_Man:
         return "Pac-Man"
 
     def __repr__(self):
-        return"C"
+        return"C" + "  "
 
 @dataclass
 class Ghost:
     color: str
-    x: int
-    y: int
-    is_dead: bool
-    spawn_position: tuple[int]
+    x: int = 0
+    y: int = 0
+    is_dead: bool = False
+    spawn_position: tuple[int] = (0, 0)
 
     def respawn(self):
-        self.y, self.x = self.spawn_position
+        self.spawn_position = (self.y, self.x)
 
     def put_new_coordinates(self, y, x):
         self.y = y

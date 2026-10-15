@@ -1,4 +1,5 @@
 from mazegenerator import MazeGenerator
+from .data_classes import Ghost, Pac_Man
 
 class MapGenerator:
     def __init__(
@@ -78,24 +79,24 @@ class MapGenerator:
                 j += 1
             i += 1
 
-    def pac_man_place(self) -> None:
+    def pac_man_place(self, map) -> None:
         y = (self.height * 2 + 1) // 2
         x = (self.width * 2 + 1) // 2
         found_place = False
         if not self.width % 2:
             x -= 1
-        if self.map[y][x] != " ":
+        if map[y][x] != " ":
             n = 2
             while y - n > 0:
-                if self.map[y + n][x] == " ":
-                    self.map[y + n][x] = self.pac_man
+                if map[y + n][x] == " ":
+                    map[y + n][x] = self.pac_man
                     self.pac_man.spawn_position = (y + n, x)
                     self.pac_man.put_new_coordinates(y + n, x)
                     found_place = True
                     break
 
-                if self.map[y - n][x] == " ":
-                    self.map[y - n][x] = self.pac_man
+                if map[y - n][x] == " ":
+                    map[y - n][x] = self.pac_man
                     self.pac_man.spawn_position = (y - n, x)
                     self.pac_man.put_new_coordinates(y - n, x)
                     found_place = True
@@ -107,33 +108,33 @@ class MapGenerator:
         else:
             self.pac_man.put_new_coordinates(y, x)
             self.pac_man.spawn_position = (y, x)
-            self.map[y][x] = self.pac_man
+            map[y][x] = self.pac_man
 
-    def ghosts_place(self):
-        self.map[1][1] = self.pink_ghost
+    def ghosts_place(self, map):
+        map[1][1] = self.pink_ghost
         self.pink_ghost.put_new_coordinates(1, 1)
         self.pink_ghost.respawn()
 
-        self.map[1][self.width * 2 - 1] = self.red_ghost
+        map[1][self.width * 2 - 1] = self.red_ghost
         self.red_ghost.put_new_coordinates(1, self.width * 2 - 1)
         self.red_ghost.respawn()
 
-        self.map[self.height * 2 - 1][1] = self.blue_ghost
+        map[self.height * 2 - 1][1] = self.blue_ghost
         self.blue_ghost.put_new_coordinates(self.height * 2 - 1, 1)
         self.blue_ghost.respawn()
 
-        self.map[self.height * 2 - 1][self.width * 2 - 1] = self.orange_ghost
+        map[self.height * 2 - 1][self.width * 2 - 1] = self.orange_ghost
         self.orange_ghost.put_new_coordinates(self.height * 2 - 1, self.width * 2 - 1)
         self.orange_ghost.respawn()
     
-    def add_pac_man_and_ghosts(self, pac_man, pink_ghost, red_ghost, blue_ghost, orange_ghost):
-        self.pac_man = pac_man
-        self.red_ghost = red_ghost
-        self.blue_ghost = blue_ghost
-        self.pink_ghost = pink_ghost
-        self.orange_ghost = orange_ghost
-        self.pac_man_place()
-        self.ghosts_place()
+    def add_pac_man_and_ghosts(self, map):
+        self.pac_man = Pac_Man()
+        self.red_ghost = Ghost(color="Red")
+        self.blue_ghost = Ghost(color="Blue")
+        self.pink_ghost = Ghost(color="Pink")
+        self.orange_ghost = Ghost(color="Orange")
+        self.pac_man_place(map)
+        self.ghosts_place(map)
 
     def generate_map(self) -> list[list[str]]:
         map = []
@@ -149,5 +150,6 @@ class MapGenerator:
                 self.open_cells(map, neighbors, i, j)
 
         self.add_ft(map)
+        self.add_pac_man_and_ghosts(map)
         return map
 
