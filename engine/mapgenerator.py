@@ -1,14 +1,19 @@
 from mazegenerator import MazeGenerator
 
 class MapGenerator:
-    def __init__(self, width, height):
+    def __init__(
+            self, width, height
+            ) -> None:
+
         self.width = width
         self.height = height
+
         self.maze = MazeGenerator(size=(width, height)).maze
+
         self.map = self.generate_map()
 
     @staticmethod
-    def open_cells(maze, neighbors, y, x):
+    def open_cells(maze, neighbors, y, x) -> None:
         for dir in neighbors:
             match dir:
                 case "N":
@@ -21,7 +26,7 @@ class MapGenerator:
                     maze[y * 2 + 1][x * 2] = " "
 
     @staticmethod
-    def convert_base(number):
+    def convert_base(number) -> str:
         base = "01"
 
         result = ""
@@ -38,7 +43,7 @@ class MapGenerator:
 
 
     @staticmethod
-    def get_neighbors(number):
+    def get_neighbors(number) -> list[str]:
         binary_n = MapGenerator.convert_base(number)
         directions = ["W", "S", "E", "N"]
         neighbors = []
@@ -48,7 +53,89 @@ class MapGenerator:
 
         return neighbors
 
-    def generate_map(self):
+    @staticmethod
+    def closed_place(map, y, x) -> None:
+        if map[y + 1][x] != "#":
+            return False
+        if map[y][x + 1] != "#":
+            return False
+        if map[y - 1][x] != "#":
+            return False
+        if map[y][x - 1] != "#":
+            return False
+        return True
+
+    def add_ft(self, map) -> None:
+        i = 0
+        j = 0
+        while i < self.height:
+            y = i * 2 + 1 
+            j = 0
+            while j < self.width:
+                x = j * 2 + 1
+                if self.closed_place(map, y, x):
+                    map[y][x] = "@"
+                j += 1
+            i += 1
+
+    def pac_man_place(self) -> None:
+        y = (self.height * 2 + 1) // 2
+        x = (self.width * 2 + 1) // 2
+        found_place = False
+        if not self.width % 2:
+            x -= 1
+        if self.map[y][x] != " ":
+            n = 2
+            while y - n > 0:
+                if self.map[y + n][x] == " ":
+                    self.map[y + n][x] = self.pac_man
+                    self.pac_man.spawn_position = (y + n, x)
+                    self.pac_man.put_new_coordinates(y + n, x)
+                    found_place = True
+                    break
+
+                if self.map[y - n][x] == " ":
+                    self.map[y - n][x] = self.pac_man
+                    self.pac_man.spawn_position = (y - n, x)
+                    self.pac_man.put_new_coordinates(y - n, x)
+                    found_place = True
+                    break
+
+                n += 2
+                if not found_place:
+                    raise ValueError("Problem on maze")
+        else:
+            self.pac_man.put_new_coordinates(y, x)
+            self.pac_man.spawn_position = (y, x)
+            self.map[y][x] = self.pac_man
+
+    def ghosts_place(self):
+        self.map[1][1] = self.pink_ghost
+        self.pink_ghost.put_new_coordinates(1, 1)
+        self.pink_ghost.respawn()
+
+        self.map[1][self.width * 2 - 1] = self.red_ghost
+        self.red_ghost.put_new_coordinates(1, self.width * 2 - 1)
+        self.red_ghost.respawn()
+
+        self.map[self.height * 2 - 1][1] = self.blue_ghost
+        self.blue_ghost.put_new_coordinates(self.height * 2 - 1, 1)
+        self.blue_ghost.respawn()
+
+        self.map[self.height * 2 - 1][self.width * 2 - 1] = self.orange_ghost
+        self.orange_ghost.put_new_coordinates(self.height * 2 - 1, self.width * 2 - 1)
+        self.orange_ghost.respawn()
+    
+    def add_pac_man_and_ghosts(self, pac_man, pink_ghost, red_ghost, blue_ghost, orange_ghost):
+        self.pac_man = pac_man
+        self.red_ghost = red_ghost
+        self.blue_ghost = blue_ghost
+        self.pink_ghost = pink_ghost
+        self.orange_ghost = orange_ghost
+        self.pac_man_place()
+        self.ghosts_place()
+
+    def generate_map(self) -> list[list[str]]:
         map = []
         tmp_list = ['#'] * (self.width * 2 + 1)
 
@@ -61,4 +148,6 @@ class MapGenerator:
                 neighbors = self.get_neighbors(x)
                 self.open_cells(map, neighbors, i, j)
 
+        self.add_ft(map)
         return map
+
