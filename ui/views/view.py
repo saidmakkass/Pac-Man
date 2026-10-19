@@ -8,10 +8,11 @@ from ui.elements.button import Button
 
 
 class View(ABC):
-    def __init__(self, win_ptr: Any, width: int, height: int):
+    def __init__(self, win_ptr: Any, width: int, height: int, interface):
         self.win_ptr = win_ptr
         self.width = width
         self.height = height
+        self.interface = interface
 
         self.images = self.get_images()
         self.animations = self.get_animations()

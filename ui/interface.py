@@ -22,21 +22,25 @@ class Interface:
             self.win_ptr,
             self.width,
             self.height,
+            self,
         )
         self.game_view = GameView(
             self.win_ptr,
             self.width,
             self.height,
+            self,
         )
         self.pause_menu_view = PauseView(
             self.win_ptr,
             self.width,
             self.height,
+            self,
         )
         self.game_over_view = GameOverView(
             self.win_ptr,
             self.width,
             self.height,
+            self,
         )
         self.views: list[View] = [
             self.main_menu_view,
@@ -45,7 +49,7 @@ class Interface:
             self.game_over_view,
         ]
 
-        self.current_view = self.main_menu_view
+        self.current_view = self.game_view
 
         self.last_time = time.perf_counter()
 

@@ -52,7 +52,7 @@ class Image(Element):
         mlx.mlx_destroy_image(mlx_ptr, self.img_ptr)
 
     def clear(self, color: int):
-        print(self.width, self.height, self.path, len(self.img_buf))  # debug
+        # print(self.width, self.height, self.path, len(self.img_buf))  # debug
         for x in range(self.width):
             for y in range(self.height):
                 self.put_pixel(x, y, color)
